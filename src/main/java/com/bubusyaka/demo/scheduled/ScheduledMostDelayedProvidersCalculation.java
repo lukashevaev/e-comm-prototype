@@ -4,11 +4,13 @@ package com.bubusyaka.demo.scheduled;
 import com.bubusyaka.demo.model.dto.MostDelayedProviders;
 import com.bubusyaka.demo.repository.jpa.MostDelayedProvidersRepository;
 import com.bubusyaka.demo.service.CacheService;
+import com.bubusyaka.demo.service.ItemService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Service
+@ConditionalOnProperty(
+        value="most-delayed-providers.enabled",
+        havingValue = "true")
 public class ScheduledMostDelayedProvidersCalculation {
 
     private final MostDelayedProvidersRepository mostDelayedProvidersRepository;

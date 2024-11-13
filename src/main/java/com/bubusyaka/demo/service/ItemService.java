@@ -36,7 +36,7 @@ public class ItemService {
     public ItemEntity createNewItem(Item item) {
         return providerRepository.findById(item.getProviderId())
                 .map(provider -> {
-                    var entity = new ItemEntity(item.getName(), item.getPrice(), item.getProviderId());
+                    var entity = new ItemEntity(item.getId(), item.getName(), item.getPrice(), item.getProviderId());
                     entity.setId(item.getId());
                     return entity;
 

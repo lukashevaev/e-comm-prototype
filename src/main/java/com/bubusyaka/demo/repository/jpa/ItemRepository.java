@@ -4,9 +4,11 @@ import com.bubusyaka.demo.model.entity.ItemEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository("ITEM")
 public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
 
     @Query(value = "SELECT * from item i where i.\"name\" = :name", nativeQuery = true)

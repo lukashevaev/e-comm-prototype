@@ -22,7 +22,7 @@ public class OrderKafkaConsumer {
     private final MeterRegistry meterRegistry;
 
     @Timed
-    //@KafkaListener(topics = "test")
+    @KafkaListener(topics = "test")
     public void consumeMessage(String message) throws JsonProcessingException {
         OrderDTO orderDto = objectMapper.readValue(message, OrderDTO.class);
         orderKafkaToDBService.persistOrder(orderDto);

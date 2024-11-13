@@ -12,11 +12,12 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 public class OrderDTO {
-    private Integer id;
-    private Integer itemId;
-    private Integer cityId;
+    private Long id;
+    private Long itemId;
+    private Long cityId;
     private Boolean isCompleted;
     private LocalDateTime creationDate;
     private LocalDateTime completionDate;
+    private Long userId;
 
 }

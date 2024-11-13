@@ -1,14 +1,15 @@
 package com.bubusyaka.demo.configuration;
 
 import com.bubusyaka.demo.model.entity.*;
+import com.bubusyaka.demo.model.enums.Role;
 import com.bubusyaka.demo.repository.jpa.*;
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -18,11 +19,35 @@ import java.util.*;
 public class DatabaseInitializer {
 
     private final ItemRepository itemRepository;
+    private final ItemTestRepository itemTestRepository;
     private final ProviderRepository providerRepository;
     private final AllowedCitiesRepository allowedCitiesRepository;
     private final DeliveryTimeRepository deliveryTimeRepository;
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
 
+    //@PostConstruct
+    public void initUsers(){
+        var idValue=0;
+        for (UsersName usersName : UsersName.values()) {
+            var user = new UserEntity();
+            idValue += 1;
+            user.setId((long) idValue);
+            user.setUsername(usersName.name());
+            user.setAge(new Random().nextLong(60) + 16);
+            List<City> enumValues = Arrays.asList(City.values());
+            user.setCity(String.valueOf(enumValues.get(new Random().nextInt(enumValues.size()))));
+            var role = Role.values()[new Random().nextInt(Role.values().length)];
+            user.setRole(role);
+
+            try {
+                userRepository.save(user);
+            }
+            catch (Exception e) {
+                log.error(e.getMessage());
+            }
+        }
+    }
     //@PostConstruct
     public void initDB() {
         for (City cityName : City.values()) {
@@ -141,6 +166,19 @@ public class DatabaseInitializer {
         UFA,
         LA,
         PEKIN
+    }
+
+    public enum UsersName {
+        ivanivanov,
+        petrpetrov,
+        sidrsidrov,
+        adminadmin,
+        bubabubovich,
+        bubabubovna,
+        grandmaster,
+        umpalumpa,
+        zuzyabuba,
+        victorvictor
     }
 
     @RequiredArgsConstructor

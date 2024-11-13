@@ -32,4 +32,7 @@ public class OrderEntity extends BaseEntity {
     @LastModifiedDate
     @Column(name = "completion_date")
     private LocalDateTime completionDate;
+
+    @Column(name = "user_id")
+    private Long userId;
 }

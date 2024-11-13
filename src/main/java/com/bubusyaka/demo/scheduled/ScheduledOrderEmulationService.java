@@ -1,8 +1,10 @@
 package com.bubusyaka.demo.scheduled;
 
 import com.bubusyaka.demo.configuration.DatabaseInitializer;
+import com.bubusyaka.demo.model.entity.OrderEntity;
 import com.bubusyaka.demo.repository.jpa.*;
 import com.bubusyaka.demo.service.MetricService;
+import com.bubusyaka.demo.service.TransferCompletedOrdersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class ScheduledOrderEmulationService {
 
     private final MetricService metricService;
+    private final TransferCompletedOrdersService transferCompletedOrdersService;
 
     /***
      * Для имитации времени выполнения заказа в 1 методе
@@ -45,6 +48,7 @@ public class ScheduledOrderEmulationService {
     private final ItemRepository itemRepository;
     private final ProviderRepository providerRepository;
     private final DeliveryTimeRepository deliveryTimeRepository;
+    private final NewOrderRepository newOrderRepository;
     private final OrderRepository orderRepository;
     private final AllowedCitiesRepository allowedCitiesRepository;
 
@@ -56,15 +60,19 @@ public class ScheduledOrderEmulationService {
     @Scheduled(fixedDelayString = "${order-completion-emulation.delay}")
     @Transactional
     public void emulateOrderCompletion() {
-        var completedOrders = orderRepository.markAllCompleted();
-        orderRepository.renewEstimatedTime();
+        //var completedOrders = newOrderRepository.markAllCompleted();
+        var completedOrders = newOrderRepository.transferCompletedOrders();
+
+        //transferCompletedOrdersService.transferCompletedOrders(completedOrders);
+
+        newOrderRepository.renewEstimatedTime();
 
         deliveryTimeRepository.findAll()
                 .forEach(entity -> deliveryTime.put(entity.getWayKey(), entity.getEstimatedDays()));
         completedOrders.forEach(order -> {
             var orderDeliveryTime = order.getCompletionDate().toInstant(ZoneOffset.UTC).toEpochMilli() - order.getCreationDate().toInstant(ZoneOffset.UTC).toEpochMilli();
             metricService.collectDeliveryTime(orderDeliveryTime);
-            var providerCity = orderRepository.findProviderCityName(order.getItemId());
+            var providerCity = newOrderRepository.findProviderCityName(order.getItemId());
             var orderCity = allowedCitiesRepository.findOrderCityName(order.getCityId());
             var wayKey = providerCity + orderCity;
             var lateness = orderDeliveryTime - deliveryTime.get(wayKey) * 24 * 60 * 60 * 1000;
@@ -72,5 +80,7 @@ public class ScheduledOrderEmulationService {
                 metricService.collectLatencyTime(lateness);
             }
         });
+
     }
+
 }

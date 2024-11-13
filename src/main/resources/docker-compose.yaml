@@ -15,6 +15,20 @@ services:
     ports:
       - "2181:2181"
 
+  minio:
+    image: minio/minio
+    entrypoint: sh
+    command: >
+      -c 'mkdir -p /data/test-bucket && minio server /data'
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment: #  Эта часть кода нам нужна, чтобы
+      MINIO_ROOT_USER: 'USERNAME'        #  запустить пользовательскую консоль
+      MINIO_ROOT_PASSWORD: 'PASSWORD'
+      MINIO_ADDRESS: ':9000'
+      MINIO_CONSOLE_ADDRESS: ':9001'
+
   kafka:
     image: obsidiandynamics/kafka
     container_name: kafka

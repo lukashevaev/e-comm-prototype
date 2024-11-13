@@ -7,9 +7,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository("ORDER")
 public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSpecificationExecutor<OrderEntity> {
 
     @Modifying
@@ -63,5 +65,8 @@ limit 1
 """, nativeQuery = true)
 String findProviderCityName(@Param("id") Long id);
 
-
+    @Query(value = """
+select * from new_orders where is_completed = true
+""", nativeQuery = true)
+    List<NewOrderEntity> findCompletedOrders();
 }

@@ -12,7 +12,7 @@ public interface DeliveryTimeRepository extends JpaRepository<DeliveryTimeEntity
 select o.id, p.provider_city||dac.city_name as "waykey" ,\s
 date_part('day',o.completion_date - o.creation_date)  as "delivery_time",
 dt.estimated_days\s
-from orders o join item i
+from new_orders o join item i
 on o.item_id = i.id\s
 join providers p\s
 on i.provider_id = p.id\s
